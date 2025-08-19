@@ -38,11 +38,9 @@ filterButtons.forEach((btn) => {
 //Adding Task
 const addTask = () => {
   const taskText = taskInput.value.trim();
-  console.log(taskText);
 
   if (taskText === "") {
     alert("Please enter task");
-    return;
   }
 
   //create task object
@@ -87,6 +85,45 @@ const deleteTask = (taskId) => {
   }
 };
 
+const editTask = (taskId) => {
+  const task = tasks.find((task) => task.id === taskId);
+  if (!task) return;
+
+  const taskNumber = document.querySelector(`[data-data-id="${task.id}"]`);
+  const currentText = taskNumber.querySelector(".task-text");
+  const actions = taskNumber.querySelector(".task-actions");
+
+  // replace text
+  const presentText = task.text;
+  currentText.innerHTML = `<input type="text" class="task-input-edit" value="${presentText}" maxlength="100">`;
+
+  actions.innerHTML = `
+        <button class="btn save-btn" onclick="saveEdit(${taskId})">Save</button>
+        <button class="btn cancel-btn" onclick="cancelEdit(${taskId})">Cancel</button>
+    `;
+};
+
+const saveEdit = (taskId) => {
+  const task = tasks.find((task) => task.id === taskId);
+  if (!task) return;
+
+  const taskNumber = document.querySelector(`[data-data-id="${task.id}"]`);
+  const taskInput = taskNumber.querySelector(".task-input-edit");
+  const newText = taskInput.value.trim();
+
+  if (newText === ``) {
+    alert("Task cannot be empty!");
+    return;
+  }
+
+  task.text = newText;
+
+  renderTask();
+};
+
+const cancelEdit = (taskId) => {
+  renderTask();
+};
 const renderTask = () => {
   // Clear current tasks
   taskList.innerHTML = "";
@@ -121,7 +158,7 @@ const createTask = (task) => {
 
   li.className = `task-item ${task.completed ? "completed" : ""}`;
 
-  li.setAttribute("data-task-id", task.id);
+  li.setAttribute("data-data-id", task.id);
 
   li.innerHTML = `<div class="task-content">
     <input type="checkbox" class="task-checkbox" ${
@@ -130,9 +167,12 @@ const createTask = (task) => {
       <span class="task-text ${task.completed ? "completed" : ""}">${
     task.text
   }</span>
-      <button class="btn delete-btn" onclick="deleteTask(${
-        task.id
-      })">Delete</button>
+  <div class="task-actions">
+    <button class="btn edit-btn" onclick="editTask(${task.id})">Edit</button>
+  <button class="btn delete-btn" onclick="deleteTask(${
+    task.id
+  })">Delete</button>
+  </div>
   </div>`;
 
   return li;
