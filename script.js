@@ -236,10 +236,16 @@ const createTask = (task, index) => {
 const renderTask = (filterText = "") => {
   taskList.innerHTML = "";
   
-  const filtered = tasks.filter(t => 
+  let filtered = tasks.filter(t => 
     t.text.toLowerCase().includes(filterText.toLowerCase()) || 
     (t.desc && t.desc.toLowerCase().includes(filterText.toLowerCase()))
   );
+
+  if (currentFilter === "pending") {
+    filtered = filtered.filter(t => !t.completed);
+  } else if (currentFilter === "completed") {
+    filtered = filtered.filter(t => t.completed);
+  }
   
   if (filtered.length === 0) {
     emptyState.style.display = "block";
@@ -249,7 +255,31 @@ const renderTask = (filterText = "") => {
       taskList.appendChild(createTask(task, index));
     });
   }
+
+  updateStats();
 };
+
+// STATS
+const updateStats = () => {
+  const total = tasks.length;
+  const completed = tasks.filter(t => t.completed).length;
+  const pending = total - completed;
+  document.getElementById("total-tasks").innerText = total;
+  document.getElementById("completed-tasks").innerText = completed;
+  document.getElementById("pending-tasks").innerText = pending;
+};
+
+// FILTER
+let currentFilter = "all";
+const filterBtns = document.querySelectorAll(".filter-btn");
+filterBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    filterBtns.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.getAttribute("data-filter");
+    renderTask(searchInput.value);
+  });
+});
 
 // SEARCH
 searchInput.addEventListener("input", (e) => {
