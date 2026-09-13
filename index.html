@@ -37,6 +37,10 @@
           <i class="fa-solid fa-folder-open"></i> <span>Import Tasks</span>
         </label>
         <input type="file" id="import-file" accept=".json" style="display: none;" />
+
+        <button id="share-receipt-btn" class="menu-item">
+          <i class="fa-solid fa-receipt"></i> <span>Share Receipt</span>
+        </button>
       </div>
     </div>
 
@@ -61,7 +65,7 @@
           <div class="modal-content input-modal-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
               <h3 style="margin: 0;">New Task</h3>
-              <button id="close-input-modal" class="icon-btn" style="background: transparent; color: var(--text-color);"><i class="fa-solid fa-xmark"></i></button>
+              <button id="close-input-modal" class="icon-btn" style="background: transparent; color: var(--text-color); font-size: 2em; padding: 10px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="input-section" style="box-shadow: none; padding: 0; background: transparent;">
               <input type="text" id="task-input" class="task-input" placeholder="Add a new task..." maxlength="100" />

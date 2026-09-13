@@ -13,6 +13,7 @@ const importFile = document.getElementById("import-file");
 const alarmSound = document.getElementById("alarm-sound");
 const menuToggle = document.getElementById("menu-toggle");
 const topMenu = document.getElementById("top-menu");
+const shareReceiptBtn = document.getElementById("share-receipt-btn");
 
 menuToggle.addEventListener("click", () => {
   topMenu.classList.toggle("open");
@@ -148,7 +149,8 @@ const addTask = () => {
       notified: false,
       preNotified: false,
       priority: taskPriority.value,
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
+      completedAt: null,
     };
     tasks.push(task);
     showToast("Task added");
@@ -220,6 +222,11 @@ const createTask = (task, index) => {
   const checkbox = li.querySelector(".task-item-checkbox");
   checkbox.addEventListener("change", () => {
     task.completed = checkbox.checked;
+    if (task.completed) {
+      task.completedAt = new Date().toISOString();
+    } else {
+      task.completedAt = null;
+    }
     saveTasks();
   });
 
@@ -453,3 +460,71 @@ installDecline.addEventListener('click', () => {
 });
 
 init();
+
+// SHARE RECEIPT
+const formatReceipt = () => {
+  let receipt = "🧾 TASK RECEIPT\n";
+  receipt += `Generated on: ${new Date().toLocaleString()}\n`;
+  receipt += "-----------------------------------\n\n";
+
+  tasks.forEach((t, i) => {
+    receipt += `${i + 1}. ${t.text}\n`;
+    receipt += `   Priority: ${t.priority || "Medium"}\n`;
+    
+    // Created Date
+    if (t.createdAt) {
+      receipt += `   Added: ${new Date(t.createdAt).toLocaleString()}\n`;
+    } else {
+      receipt += `   Added: Unknown\n`;
+    }
+    
+    // Status
+    let statusText = t.completed ? "✅ Completed" : "⏳ Pending";
+    if (!t.completed && t.dueDate) {
+      const due = new Date(t.dueDate);
+      if (new Date() > due) {
+        statusText += " (🚨 OVERDUE)";
+      }
+    }
+    receipt += `   Status: ${statusText}\n`;
+
+    if (t.completedAt && t.completed) {
+      receipt += `   Completed On: ${new Date(t.completedAt).toLocaleString()}\n`;
+    }
+    if (t.dueDate) {
+      receipt += `   Due Date: ${new Date(t.dueDate).toLocaleString()}\n`;
+    }
+    receipt += "\n";
+  });
+  
+  receipt += "-----------------------------------\n";
+  receipt += `Total: ${tasks.length} | Completed: ${tasks.filter(t=>t.completed).length} | Pending: ${tasks.filter(t=>!t.completed).length}`;
+  return receipt;
+};
+
+if (shareReceiptBtn) {
+  shareReceiptBtn.addEventListener("click", async () => {
+    if (tasks.length === 0) {
+      showToast("No tasks to share!");
+      return;
+    }
+    const receiptText = formatReceipt();
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Task Manager Receipt',
+          text: receiptText
+        });
+        showToast("Receipt shared!");
+      } catch (err) {
+        console.log("Error sharing", err);
+      }
+    } else {
+      // Fallback
+      navigator.clipboard.writeText(receiptText).then(() => {
+        showToast("Receipt copied to clipboard!");
+      });
+    }
+  });
+}
