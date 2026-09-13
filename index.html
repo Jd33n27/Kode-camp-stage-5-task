@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Task Manager - DOM Manipulation Project</title>
+    <title>Task Manager - Original UI</title>
     <link rel="stylesheet" href="./style.css" />
     <link rel="manifest" href="./manifest.json" />
     <!-- FontAwesome CDN for Icons -->
@@ -12,17 +12,18 @@
   <body>
     <!-- Theme Toggle & Tools -->
     <div class="top-bar">
-      <button id="theme-toggle" class="icon-btn" title="Toggle Dark Mode"><i class="fa-solid fa-moon"></i></button>
+      <button id="theme-toggle" class="icon-btn" title="Toggle Theme"><i class="fa-solid fa-circle-half-stroke"></i></button>
       <div class="data-tools">
-        <button id="export-btn" class="icon-btn" title="Export Tasks"><i class="fa-solid fa-floppy-disk"></i></button>
-        <label for="import-file" class="icon-btn" title="Import Tasks" style="cursor: pointer;"><i class="fa-solid fa-folder-open"></i></label>
+        <button id="toggle-pomodoro" class="icon-btn" title="Pomodoro Timer"><i class="fa-solid fa-stopwatch"></i></button>
+        <button id="export-btn" class="icon-btn" title="Export (Download)"><i class="fa-solid fa-download"></i></button>
+        <label for="import-file" class="icon-btn" title="Import (Upload)" style="cursor: pointer;"><i class="fa-solid fa-upload"></i></label>
         <input type="file" id="import-file" accept=".json" style="display: none;" />
       </div>
     </div>
 
     <div class="container">
       <div class="header">
-        <h1 class="heading"><i class="fa-solid fa-list-check"></i> Task Manager</h1>
+        <h1 class="heading"><i class="fa-solid fa-check"></i> Tasks</h1>
         <p>Stay organized and productive!</p>
         <div class="task-stats">
           <div class="stat">
@@ -41,12 +42,13 @@
       </div>
 
       <div class="main-content">
-        <div class="pomodoro-section">
+        <!-- Hidden Pomodoro -->
+        <div class="pomodoro-section" id="pomodoro-section" style="display: none;">
           <h2><i class="fa-solid fa-clock"></i> Pomodoro Timer</h2>
           <div class="pomodoro-timer" id="pomodoro-time">25:00</div>
           <div class="pomodoro-controls">
-            <button class="btn add-btn" id="pomodoro-start">Start</button>
-            <button class="btn cancel-btn" id="pomodoro-reset">Reset</button>
+            <button class="btn btn-primary" id="pomodoro-start">Start</button>
+            <button class="btn btn-secondary" id="pomodoro-reset">Reset</button>
           </div>
         </div>
 
@@ -55,20 +57,18 @@
         </div>
 
         <div class="input-section">
-          <input
-            type="text"
-            id="task-input"
-            class="task-input"
-            placeholder="What needs to be done?"
-            maxlength="100"
-          />
-          <input type="datetime-local" id="task-date" class="task-date" title="Set a Reminder" />
-          <select id="task-priority" class="task-priority">
-            <option value="Low">Low</option>
-            <option value="Medium" selected>Medium</option>
-            <option value="High">High</option>
-          </select>
-          <button id="add-btn" class="add-btn">Add Task</button>
+          <input type="text" id="task-input" class="task-input" placeholder="Add a new task..." maxlength="100" />
+          <textarea id="task-desc" class="task-input task-desc-input" placeholder="Add details or notes..."></textarea>
+          
+          <div class="input-row-options">
+            <input type="datetime-local" id="task-date" class="task-date" title="Set a Reminder" />
+            <select id="task-priority" class="task-priority">
+              <option value="Low">Low Priority</option>
+              <option value="Medium" selected>Medium Priority</option>
+              <option value="High">High Priority</option>
+            </select>
+            <button id="add-btn" class="btn btn-primary">Add Task</button>
+          </div>
         </div>
 
         <div class="filter-section">
@@ -77,12 +77,10 @@
           <button class="filter-btn" data-filter="completed">Completed</button>
         </div>
 
-        <ul id="task-list" class="task-list">
-          <!-- Tasks will be dynamically added here -->
-        </ul>
+        <ul id="task-list" class="task-list"></ul>
 
         <div id="empty-state" class="empty-state" style="display: none">
-          <div style="font-size: 4em; margin-bottom: 10px; color: #6c757d; opacity: 0.5;"><i class="fa-regular fa-clipboard"></i></div>
+          <div style="font-size: 4em; margin-bottom: 10px; color: #6c757d; opacity: 0.5;"><i class="fa-solid fa-check-circle"></i></div>
           <p>No tasks yet. Add one above to get started!</p>
         </div>
       </div>
@@ -94,15 +92,14 @@
         <h3>Install App <i class="fa-solid fa-mobile-screen-button"></i></h3>
         <p>Install this task manager on your device for quick access and offline use!</p>
         <div class="modal-actions">
-          <button id="install-accept" class="btn add-btn">Install</button>
-          <button id="install-decline" class="btn cancel-btn">Not Now</button>
+          <button id="install-accept" class="btn btn-primary">Install</button>
+          <button id="install-decline" class="btn btn-secondary">Not Now</button>
         </div>
       </div>
     </div>
 
-    <!-- Toast Notifications -->
     <div id="toast-container" class="toast-container"></div>
-
+    <audio id="alarm-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
     <script src="./script.js"></script>
   </body>
 </html>
