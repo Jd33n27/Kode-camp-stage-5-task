@@ -35,18 +35,20 @@
       <!-- Add Task Section -->
       <div class="add-task-container">
         <div class="input-row">
-          <button id="add-btn" class="icon-btn add-icon-btn"><i class="fa-solid fa-plus"></i></button>
-          <input type="text" id="task-input" class="clean-input" placeholder="Add a task" maxlength="100" />
+          <input type="text" id="task-input" class="clean-input" placeholder="Add a new task..." maxlength="100" style="padding-left: 8px; font-weight: bold; font-size: 18px;" />
         </div>
-        <div class="task-details-input" id="task-details-section">
-          <textarea id="task-desc" class="clean-input text-small" placeholder="Details"></textarea>
-          <div class="task-options-row">
-            <input type="datetime-local" id="task-date" class="clean-date" title="Set a Reminder" />
-            <select id="task-priority" class="clean-select">
-              <option value="Low">Low Priority</option>
-              <option value="Medium" selected>Medium Priority</option>
-              <option value="High">High Priority</option>
-            </select>
+        <div class="task-details-input" id="task-details-section" style="margin-left: 0;">
+          <textarea id="task-desc" class="clean-input text-small" placeholder="Add details or notes..."></textarea>
+          <div class="task-options-row" style="justify-content: space-between;">
+            <div style="display: flex; gap: 12px;">
+              <input type="datetime-local" id="task-date" class="clean-date" title="Set a Reminder" />
+              <select id="task-priority" class="clean-select">
+                <option value="Low">Low Priority</option>
+                <option value="Medium" selected>Medium Priority</option>
+                <option value="High">High Priority</option>
+              </select>
+            </div>
+            <button id="add-btn" class="btn btn-primary">Add Task</button>
           </div>
         </div>
       </div>

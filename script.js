@@ -109,7 +109,7 @@ const addTask = () => {
       tasks[taskIndex].priority = taskPriority.value;
     }
     editingTaskId = null;
-    addBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
+    addBtn.innerText = 'Add Task';
     showToast("Task updated");
   } else {
     // Add new task
@@ -191,7 +191,7 @@ const createTask = (task, index) => {
     taskPriority.value = task.priority || "Medium";
     
     editingTaskId = task.id;
-    addBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    addBtn.innerText = 'Save Update';
     taskInput.focus();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
