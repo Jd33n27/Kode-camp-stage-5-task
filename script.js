@@ -49,19 +49,33 @@ const checkReminders = () => {
   setInterval(() => {
     const now = new Date();
     tasks.forEach(task => {
-      if (task.dueDate && !task.completed && !task.notified) {
+      if (task.dueDate && !task.completed) {
         const dueTime = new Date(task.dueDate);
-        if (now >= dueTime) {
+        const timeDiffMs = dueTime - now;
+        const timeDiffMinutes = timeDiffMs / (1000 * 60);
+
+        // Pre-Alarm: 5 minutes before
+        if (timeDiffMinutes <= 5 && timeDiffMinutes > 0 && !task.preNotified) {
+          showToast(`⏳ Heads up: "${task.text}" is due in 5 minutes!`);
+          if (Notification.permission === 'granted') {
+            new Notification('Upcoming Task', { body: `${task.text} is due in 5 minutes!`, icon: './icon-192.svg' });
+          }
+          task.preNotified = true;
+          localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+
+        // Actual Alarm
+        if (now >= dueTime && !task.notified) {
           // Play Alarm
           alarmSound.play().catch(e => console.log("Audio play blocked by browser."));
           
-          showToast(`⏰ Alarm: ${task.text} is due!`);
+          showToast(`⏰ Alarm: "${task.text}" is due now!`);
           if (Notification.permission === 'granted') {
-            new Notification('Task Reminder', { body: task.text, icon: './icon-192.svg' });
+            new Notification('Task Due!', { body: task.text, icon: './icon-192.svg' });
           } else if (Notification.permission !== 'denied') {
             Notification.requestPermission().then(permission => {
               if (permission === 'granted') {
-                new Notification('Task Reminder', { body: task.text, icon: './icon-192.svg' });
+                new Notification('Task Due!', { body: task.text, icon: './icon-192.svg' });
               }
             });
           }
@@ -85,6 +99,7 @@ const addTask = () => {
     completed: false,
     dueDate: taskDate.value,
     notified: false,
+    preNotified: false,
     priority: taskPriority.value,
     createdAt: new Date(),
   };
