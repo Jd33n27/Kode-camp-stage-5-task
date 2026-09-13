@@ -6,21 +6,23 @@
     <title>Task Manager - DOM Manipulation Project</title>
     <link rel="stylesheet" href="./style.css" />
     <link rel="manifest" href="./manifest.json" />
+    <!-- FontAwesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   </head>
   <body>
     <!-- Theme Toggle & Tools -->
     <div class="top-bar">
-      <button id="theme-toggle" class="icon-btn" title="Toggle Dark Mode">🌙</button>
+      <button id="theme-toggle" class="icon-btn" title="Toggle Dark Mode"><i class="fa-solid fa-moon"></i></button>
       <div class="data-tools">
-        <button id="export-btn" class="icon-btn" title="Export Tasks">💾</button>
-        <label for="import-file" class="icon-btn" title="Import Tasks" style="cursor: pointer;">📂</label>
+        <button id="export-btn" class="icon-btn" title="Export Tasks"><i class="fa-solid fa-floppy-disk"></i></button>
+        <label for="import-file" class="icon-btn" title="Import Tasks" style="cursor: pointer;"><i class="fa-solid fa-folder-open"></i></label>
         <input type="file" id="import-file" accept=".json" style="display: none;" />
       </div>
     </div>
 
     <div class="container">
       <div class="header">
-        <h1 class="heading">📝 Task Manager</h1>
+        <h1 class="heading"><i class="fa-solid fa-list-check"></i> Task Manager</h1>
         <p>Stay organized and productive!</p>
         <div class="task-stats">
           <div class="stat">
@@ -40,7 +42,7 @@
 
       <div class="main-content">
         <div class="pomodoro-section">
-          <h2>🍅 Pomodoro Timer</h2>
+          <h2><i class="fa-solid fa-clock"></i> Pomodoro Timer</h2>
           <div class="pomodoro-timer" id="pomodoro-time">25:00</div>
           <div class="pomodoro-controls">
             <button class="btn add-btn" id="pomodoro-start">Start</button>
@@ -80,7 +82,7 @@
         </ul>
 
         <div id="empty-state" class="empty-state" style="display: none">
-          <div style="font-size: 4em">📋</div>
+          <div style="font-size: 4em; margin-bottom: 10px; color: #6c757d; opacity: 0.5;"><i class="fa-regular fa-clipboard"></i></div>
           <p>No tasks yet. Add one above to get started!</p>
         </div>
       </div>
@@ -89,7 +91,7 @@
     <!-- PWA Install Modal -->
     <div id="install-modal" class="modal-overlay" style="display: none;">
       <div class="modal-content">
-        <h3>Install App 📱</h3>
+        <h3>Install App <i class="fa-solid fa-mobile-screen-button"></i></h3>
         <p>Install this task manager on your device for quick access and offline use!</p>
         <div class="modal-actions">
           <button id="install-accept" class="btn add-btn">Install</button>

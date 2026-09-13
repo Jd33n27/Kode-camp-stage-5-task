@@ -23,22 +23,49 @@ const toastContainer = document.getElementById("toast-container");
 const showToast = (message) => {
   const toast = document.createElement("div");
   toast.className = "toast";
-  toast.textContent = message;
+  toast.innerHTML = message;
   toastContainer.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
+};
+
+// REMINDER ALERT SYSTEM
+const checkDueDates = () => {
+  const today = new Date().toISOString().split('T')[0];
+  const dueTasks = tasks.filter(t => !t.completed && t.dueDate && t.dueDate <= today);
+  
+  if (dueTasks.length > 0) {
+    showToast(`<i class="fa-solid fa-bell"></i> Reminder: You have ${dueTasks.length} pending task(s) due today or earlier!`);
+    
+    // Optionally trigger native browser notification if permitted
+    if (Notification.permission === "granted") {
+      new Notification("Task Reminder", {
+        body: `You have ${dueTasks.length} pending task(s) due today or earlier!`,
+        icon: "icon-192.png"
+      });
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          new Notification("Task Reminder", {
+            body: `You have ${dueTasks.length} pending task(s) due today or earlier!`,
+            icon: "icon-192.png"
+          });
+        }
+      });
+    }
+  }
 };
 
 // THEME TOGGLE
 let isDarkMode = localStorage.getItem("darkMode") === "true";
 if (isDarkMode) document.body.classList.add("dark-mode");
-themeToggle.textContent = isDarkMode ? "☀️" : "🌙";
+themeToggle.innerHTML = isDarkMode ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
 
 themeToggle.addEventListener("click", () => {
   isDarkMode = !isDarkMode;
   document.body.classList.toggle("dark-mode", isDarkMode);
-  themeToggle.textContent = isDarkMode ? "☀️" : "🌙";
+  themeToggle.innerHTML = isDarkMode ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
   localStorage.setItem("darkMode", isDarkMode);
-  showToast(isDarkMode ? "Dark mode enabled" : "Light mode enabled");
+  showToast(isDarkMode ? '<i class="fa-solid fa-moon"></i> Dark mode enabled' : '<i class="fa-solid fa-sun"></i> Light mode enabled');
 });
 
 // PWA INSTALL MODAL
@@ -48,11 +75,8 @@ const btnInstall = document.getElementById("install-accept");
 const btnDecline = document.getElementById("install-decline");
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent Chrome 67 and earlier from automatically showing the prompt
   e.preventDefault();
-  // Stash the event so it can be triggered later.
   deferredPrompt = e;
-  // Update UI to notify the user they can add to home screen
   if (!localStorage.getItem('pwaDeclined')) {
     installModal.style.display = "flex";
   }
@@ -64,7 +88,7 @@ btnInstall.addEventListener('click', () => {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
-        showToast("App installed successfully!");
+        showToast('<i class="fa-solid fa-check"></i> App installed successfully!');
       }
       deferredPrompt = null;
     });
@@ -128,7 +152,7 @@ exportBtn.addEventListener("click", () => {
   dlAnchorElem.setAttribute("href", dataStr);
   dlAnchorElem.setAttribute("download", "tasks_backup.json");
   dlAnchorElem.click();
-  showToast("Tasks exported successfully!");
+  showToast('<i class="fa-solid fa-file-export"></i> Tasks exported successfully!');
 });
 
 importFile.addEventListener("change", (event) => {
@@ -142,10 +166,10 @@ importFile.addEventListener("change", (event) => {
         tasks = importedTasks;
         saveTasks();
         renderTask();
-        showToast("Tasks imported successfully!");
+        showToast('<i class="fa-solid fa-file-import"></i> Tasks imported successfully!');
       }
     } catch (err) {
-      showToast("Invalid JSON file");
+      showToast('<i class="fa-solid fa-triangle-exclamation"></i> Invalid JSON file');
     }
   };
   reader.readAsText(file);
@@ -155,7 +179,7 @@ importFile.addEventListener("change", (event) => {
 // ADD TASK
 const addTask = () => {
   const taskText = taskInput.value.trim();
-  if (taskText === "") return showToast("Please enter a task");
+  if (taskText === "") return showToast('<i class="fa-solid fa-circle-exclamation"></i> Please enter a task');
 
   const task = {
     id: taskIdCounter++,
@@ -175,7 +199,7 @@ const addTask = () => {
   addBtn.disabled = true;
 
   renderTask();
-  showToast("Task added!");
+  showToast('<i class="fa-solid fa-circle-plus"></i> Task added!');
 };
 addBtn.addEventListener("click", addTask);
 
@@ -186,7 +210,7 @@ const toggleTask = (taskId) => {
     task.completed = !task.completed;
     saveTasks();
     renderTask();
-    if(task.completed) showToast("Task marked completed!");
+    if(task.completed) showToast('<i class="fa-solid fa-circle-check"></i> Task marked completed!');
   }
 };
 
@@ -196,7 +220,7 @@ const deleteTask = (taskId) => {
     tasks = tasks.filter((t) => t.id !== taskId);
     saveTasks();
     renderTask();
-    showToast("Task deleted!");
+    showToast('<i class="fa-solid fa-trash-can"></i> Task deleted!');
   }
 };
 
@@ -224,11 +248,11 @@ window.saveEdit = (taskId) => {
   const taskInputEl = taskEl.querySelector(".task-input-edit");
   const newText = taskInputEl.value.trim();
 
-  if (newText === "") return showToast("Task cannot be empty!");
+  if (newText === "") return showToast('<i class="fa-solid fa-circle-exclamation"></i> Task cannot be empty!');
   task.text = newText;
   saveTasks();
   renderTask();
-  showToast("Task updated!");
+  showToast('<i class="fa-solid fa-pen-to-square"></i> Task updated!');
 };
 
 window.cancelEdit = () => renderTask();
@@ -270,7 +294,7 @@ const createTask = (task, index) => {
 
   const priorityClass = task.priority ? task.priority.toLowerCase() : 'medium';
   const badgeHTML = task.priority ? `<span class="badge ${priorityClass}">${task.priority}</span>` : '';
-  const dateHTML = task.dueDate ? `<span class="badge">📅 ${task.dueDate}</span>` : '';
+  const dateHTML = task.dueDate ? `<span class="badge"><i class="fa-regular fa-calendar"></i> ${task.dueDate}</span>` : '';
 
   li.innerHTML = `
   <div class="task-content">
@@ -336,6 +360,7 @@ const init = () => {
   addBtn.disabled = true;
   renderTask();
   updatePomodoroDisplay();
+  checkDueDates();
 };
 
 // POMODORO LOGIC
@@ -365,9 +390,17 @@ pomodoroStartBtn.addEventListener('click', () => {
         pomodoroStartBtn.textContent = 'Start';
         pomodoroStartBtn.classList.remove('cancel-btn');
         pomodoroStartBtn.classList.add('add-btn');
-        showToast("🍅 Pomodoro session completed! Take a break.");
+        showToast('<i class="fa-solid fa-stopwatch"></i> Pomodoro session completed! Take a break.');
         timeLeft = 25 * 60;
         updatePomodoroDisplay();
+        
+        // Also trigger native notification for Pomodoro
+        if (Notification.permission === "granted") {
+          new Notification("Pomodoro Complete", {
+            body: "Your session is over. Take a break!",
+            icon: "icon-192.png"
+          });
+        }
       }
     }, 1000);
     pomodoroStartBtn.textContent = 'Pause';
