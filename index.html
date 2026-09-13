@@ -12,33 +12,25 @@
   <body>
     <!-- Theme Toggle & Tools -->
     <div class="top-bar">
-      <button id="theme-toggle" class="icon-btn" title="Toggle Theme"><i class="fa-solid fa-circle-half-stroke"></i></button>
+      <button id="theme-toggle" class="icon-btn" title="Toggle Dark Mode"><i class="fa-solid fa-moon"></i></button>
       <div class="data-tools">
+        <select id="alarm-selector" class="icon-btn" style="width: auto; padding: 0 10px; font-size: 14px; border-radius: 20px; outline: none; appearance: none; -webkit-appearance: none; cursor: pointer;" title="Choose Alarm Tone">
+          <option value="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3">Tone 1</option>
+          <option value="https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3">Tone 2</option>
+          <option value="https://assets.mixkit.co/active_storage/sfx/1054/1054-preview.mp3">Tone 3</option>
+          <option value="https://assets.mixkit.co/active_storage/sfx/995/995-preview.mp3">Tone 4</option>
+        </select>
         <button id="toggle-pomodoro" class="icon-btn" title="Pomodoro Timer"><i class="fa-solid fa-stopwatch"></i></button>
-        <button id="export-btn" class="icon-btn" title="Export (Download)"><i class="fa-solid fa-download"></i></button>
-        <label for="import-file" class="icon-btn" title="Import (Upload)" style="cursor: pointer;"><i class="fa-solid fa-upload"></i></label>
+        <button id="export-btn" class="icon-btn" title="Export Tasks"><i class="fa-solid fa-floppy-disk"></i></button>
+        <label for="import-file" class="icon-btn" title="Import Tasks" style="cursor: pointer;"><i class="fa-solid fa-folder-open"></i></label>
         <input type="file" id="import-file" accept=".json" style="display: none;" />
       </div>
     </div>
 
     <div class="container">
       <div class="header">
-        <h1 class="heading"><i class="fa-solid fa-check"></i> Tasks</h1>
+        <h1 class="heading"><i class="fa-solid fa-list-check"></i> Task Manager</h1>
         <p>Stay organized and productive!</p>
-        <div class="task-stats">
-          <div class="stat">
-            <div class="stat-number" id="total-tasks">0</div>
-            <div>Total Tasks</div>
-          </div>
-          <div class="stat">
-            <div class="stat-number" id="completed-tasks">0</div>
-            <div>Completed</div>
-          </div>
-          <div class="stat">
-            <div class="stat-number" id="pending-tasks">0</div>
-            <div>Pending</div>
-          </div>
-        </div>
       </div>
 
       <div class="main-content">
@@ -71,17 +63,34 @@
           </div>
         </div>
 
-        <div class="filter-section">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="pending">Pending</button>
-          <button class="filter-btn" data-filter="completed">Completed</button>
-        </div>
+        <div class="tasks-unified-section">
+          <div class="task-stats">
+            <div class="stat">
+              <div class="stat-number" id="total-tasks">0</div>
+              <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat">
+              <div class="stat-number" id="completed-tasks">0</div>
+              <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat">
+              <div class="stat-number" id="pending-tasks">0</div>
+              <div class="stat-label">Pending</div>
+            </div>
+          </div>
 
-        <ul id="task-list" class="task-list"></ul>
+          <div class="filter-section">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="pending">Pending</button>
+            <button class="filter-btn" data-filter="completed">Completed</button>
+          </div>
 
-        <div id="empty-state" class="empty-state" style="display: none">
-          <div style="font-size: 4em; margin-bottom: 10px; color: #6c757d; opacity: 0.5;"><i class="fa-solid fa-check-circle"></i></div>
-          <p>No tasks yet. Add one above to get started!</p>
+          <ul id="task-list" class="task-list"></ul>
+
+          <div id="empty-state" class="empty-state" style="display: none">
+            <div style="font-size: 4em; margin-bottom: 10px; color: var(--secondary-text); opacity: 0.5;"><i class="fa-solid fa-check-circle"></i></div>
+            <p>No tasks yet. Add one above to get started!</p>
+          </div>
         </div>
       </div>
     </div>

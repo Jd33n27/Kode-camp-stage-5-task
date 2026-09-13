@@ -58,7 +58,7 @@ const checkReminders = () => {
         // Pre-Alarm: 5 minutes before
         if (timeDiffMinutes <= 5 && timeDiffMinutes > 0 && !task.preNotified) {
           showToast(`⏳ Heads up: "${task.text}" is due in 5 minutes!`);
-          if (Notification.permission === 'granted') {
+          if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Upcoming Task', { body: `${task.text} is due in 5 minutes!`, icon: './icon-192.svg' });
           }
           task.preNotified = true;
@@ -71,14 +71,8 @@ const checkReminders = () => {
           alarmSound.play().catch(e => console.log("Audio play blocked by browser."));
           
           showToast(`⏰ Alarm: "${task.text}" is due now!`);
-          if (Notification.permission === 'granted') {
+          if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Task Due!', { body: task.text, icon: './icon-192.svg' });
-          } else if (Notification.permission !== 'denied') {
-            Notification.requestPermission().then(permission => {
-              if (permission === 'granted') {
-                new Notification('Task Due!', { body: task.text, icon: './icon-192.svg' });
-              }
-            });
           }
           task.notified = true;
           localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -135,9 +129,21 @@ const addTask = () => {
   saveTasks();
 };
 
-addBtn.addEventListener("click", addTask);
+addBtn.addEventListener("click", () => {
+  // Request permission on user gesture if not already granted
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+  addTask();
+});
+
 taskInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") addTask();
+  if (e.key === "Enter") {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+    addTask();
+  }
 });
 
 // CREATE TASK ELEMENT
@@ -362,6 +368,9 @@ pomodoroStartBtn.addEventListener("click", () => {
         clearInterval(pomodoroInterval);
         alarmSound.play().catch(e => console.log("Audio blocked"));
         showToast("Pomodoro session completed!");
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('Pomodoro Complete!', { body: 'Time to take a break.', icon: './icon-192.svg' });
+        }
         isPomodoroRunning = false;
         pomodoroStartBtn.innerText = "Start";
       }
@@ -377,6 +386,23 @@ pomodoroResetBtn.addEventListener("click", () => {
   pomodoroStartBtn.innerText = "Start";
   timeLeft = 25 * 60;
   updatePomodoroDisplay();
+});
+
+// ALARM SELECTOR
+const alarmSelector = document.getElementById("alarm-selector");
+if (localStorage.getItem("alarmTone")) {
+  alarmSelector.value = localStorage.getItem("alarmTone");
+  alarmSound.src = alarmSelector.value;
+}
+
+alarmSelector.addEventListener("change", (e) => {
+  const selectedTone = e.target.value;
+  alarmSound.src = selectedTone;
+  localStorage.setItem("alarmTone", selectedTone);
+  
+  // Play a quick preview
+  alarmSound.currentTime = 0;
+  alarmSound.play().catch(err => console.log("Audio preview blocked", err));
 });
 
 // PWA INSTALL
