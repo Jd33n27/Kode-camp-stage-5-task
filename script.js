@@ -253,19 +253,25 @@ const createTask = (task, index) => {
       
       const compliments = {
         "High": [
-          "Lo, a mighty deed thou hast accomplished! Thy valor shineth as the morning sun! ✨",
-          "Thou hast vanquished thy greatest labor! My heart singeth at thy wondrous triumph! 💖",
-          "O wondrous soul, thou hast conquered the highest mountain! Glory be unto thee! 👑"
+          "Thou hast conquered the highest peak! Thy glory outshines the fullest moon upon a midnight sea! 🌕",
+          "As the moon doth rule the starry heavens, so hast thou mastered this mighty labor! ✨",
+          "A wondrous triumph! Even the great lunar sphere bows to the brilliance of thy deed! 🌙",
+          "Lo, a monumental victory! Thy strength is as the tidal pull of the silver moon! 🌊",
+          "The night sky rejoiceth! Thou hast vanquished thy greatest task beneath the watchful moon! 🌖"
         ],
         "Medium": [
-          "Well wrought, mine own beloved! Another noble task doth yield to thy grace. 🌹",
-          "Sweet victory! Thy steady hands have woven yet another masterpiece of toil. 🕊️",
-          "Verily, thou art a marvel! Thy diligence doth warm the very cockles of my heart. 📜"
+          "Well wrought, mine own beloved! Thy steady hands shine with the grace of the crescent moon. 🌙",
+          "Sweet victory! Another noble task illuminated by thy lunar radiance. 🌌",
+          "As the moon doth guide the weary traveler, thy diligence lighteth the path of triumph! 🌔",
+          "Verily, thou art a marvel! Thy work glows softly as moonlight upon a quiet meadow. 🎑",
+          "Another beautiful deed accomplished, bathed in the silver glow of the evening star! ✨"
         ],
         "Low": [
-          "A gentle labor, sweetly finished! 'Tis but a trifle for one as splendid as thee. 🌷",
-          "Even in the smallest of deeds, thy brilliance doth shine forth! 🕯️",
-          "Softly and gracefully done, my dearest. One step closer to thy heart's desire. 🦋"
+          "A gentle labor, sweetly finished, like a fleeting shadow passing o'er the moon. 🌘",
+          "Softly and gracefully done, my dearest, as the moonbeams caress the slumbering earth. 🌠",
+          "'Tis but a trifle for thee, yet thy brilliance twinkles like a quiet star beside the moon! 💫",
+          "Even in the smallest of deeds, thy gentle lunar spirit doth bring peace to the night. 🌒",
+          "A swift and quiet victory, like a pale moon rising in the early dusk. 🌛"
         ]
       };
       const msgs = compliments[priority];
