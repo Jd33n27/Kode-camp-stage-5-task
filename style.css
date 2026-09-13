@@ -54,10 +54,11 @@ body {
   position: absolute;
   top: 20px;
   right: 20px;
-  display: flex;
-  gap: 15px;
+  z-index: 100;
 }
-.top-bar .icon-btn {
+
+.menu-toggle-btn {
+  display: none;
   background: var(--container-bg);
   border: none;
   width: 44px;
@@ -67,19 +68,55 @@ body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   color: var(--primary-color);
   font-size: 1.2em;
-  display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, background 0.2s ease;
 }
-.top-bar .icon-btn:hover {
-  transform: translateY(-2px);
-  background: var(--primary-color);
-  color: white;
-}
-.data-tools {
+
+.top-menu {
   display: flex;
-  gap: 10px;
+  gap: 15px;
+  align-items: center;
+  background: var(--container-bg);
+  padding: 10px 20px;
+  border-radius: 30px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.menu-item:hover {
+  color: var(--primary-color);
+}
+
+.menu-item i {
+  font-size: 1.2em;
+  color: var(--primary-color);
+}
+
+.select-menu-item {
+  gap: 4px;
+}
+
+.alarm-dropdown {
+  background: transparent;
+  border: none;
+  font-weight: 600;
+  color: var(--text-color);
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  padding: 0;
 }
 
 .container {
@@ -436,13 +473,35 @@ body {
   .top-bar {
     top: 15px;
     right: 15px;
-    gap: 10px;
   }
-  .top-bar .icon-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 1em;
+  .menu-toggle-btn {
+    display: flex;
+    margin-left: auto;
   }
+  .top-menu {
+    display: none; /* hidden by default on mobile */
+    flex-direction: column;
+    align-items: flex-start;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 200px;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  }
+  .top-menu.open {
+    display: flex;
+  }
+  .menu-item {
+    width: 100%;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .menu-item:last-child {
+    border-bottom: none;
+  }
+  
   .header h1 {
     font-size: 2.2em;
   }

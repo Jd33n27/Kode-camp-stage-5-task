@@ -13,6 +13,18 @@ const importFile = document.getElementById("import-file");
 const pomodoroToggle = document.getElementById("toggle-pomodoro");
 const pomodoroSection = document.getElementById("pomodoro-section");
 const alarmSound = document.getElementById("alarm-sound");
+const menuToggle = document.getElementById("menu-toggle");
+const topMenu = document.getElementById("top-menu");
+
+menuToggle.addEventListener("click", () => {
+  topMenu.classList.toggle("open");
+});
+
+document.addEventListener("click", (e) => {
+  if (!menuToggle.contains(e.target) && !topMenu.contains(e.target)) {
+    topMenu.classList.remove("open");
+  }
+});
 
 // SERVICE WORKER REGISTRATION
 if ('serviceWorker' in navigator) {
