@@ -29,31 +29,41 @@ const showToast = (message) => {
 };
 
 // REMINDER ALERT SYSTEM
-const checkDueDates = () => {
-  const today = new Date().toISOString().split('T')[0];
-  const dueTasks = tasks.filter(t => !t.completed && t.dueDate && t.dueDate <= today);
-  
-  if (dueTasks.length > 0) {
-    showToast(`<i class="fa-solid fa-bell"></i> Reminder: You have ${dueTasks.length} pending task(s) due today or earlier!`);
-    
-    // Optionally trigger native browser notification if permitted
-    if (Notification.permission === "granted") {
-      new Notification("Task Reminder", {
-        body: `You have ${dueTasks.length} pending task(s) due today or earlier!`,
-        icon: "icon-192.png"
-      });
-    } else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then(permission => {
-        if (permission === "granted") {
-          new Notification("Task Reminder", {
-            body: `You have ${dueTasks.length} pending task(s) due today or earlier!`,
-            icon: "icon-192.png"
+const checkReminders = () => {
+  const now = new Date();
+  let updated = false;
+
+  tasks.forEach(task => {
+    if (!task.completed && task.dueDate && !task.notified) {
+      const taskTime = new Date(task.dueDate);
+      if (now >= taskTime) {
+        task.notified = true;
+        updated = true;
+        showToast(`<i class="fa-solid fa-bell"></i> REMINDER: "${task.text}" is due!`);
+        
+        // Trigger native notification if permitted
+        if (Notification.permission === "granted") {
+          new Notification("Task Reminder!", {
+            body: `"${task.text}" is due now!`,
+            icon: "icon-192.svg"
           });
         }
-      });
+      }
     }
+  });
+
+  if (updated) {
+    saveTasks();
+    renderTask();
   }
 };
+// Check every 10 seconds
+setInterval(checkReminders, 10000);
+
+// Request permissions on load
+if ("Notification" in window && Notification.permission !== "denied" && Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
 
 // THEME TOGGLE
 let isDarkMode = localStorage.getItem("darkMode") === "true";
@@ -186,6 +196,7 @@ const addTask = () => {
     text: taskText,
     completed: false,
     dueDate: taskDate.value,
+    notified: false,
     priority: taskPriority.value,
     createdAt: new Date(),
   };
@@ -294,7 +305,13 @@ const createTask = (task, index) => {
 
   const priorityClass = task.priority ? task.priority.toLowerCase() : 'medium';
   const badgeHTML = task.priority ? `<span class="badge ${priorityClass}">${task.priority}</span>` : '';
-  const dateHTML = task.dueDate ? `<span class="badge"><i class="fa-regular fa-calendar"></i> ${task.dueDate}</span>` : '';
+  
+  let displayDate = "";
+  if (task.dueDate) {
+    const d = new Date(task.dueDate);
+    displayDate = d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+  const dateHTML = task.dueDate ? `<span class="badge"><i class="fa-regular fa-calendar"></i> ${displayDate}</span>` : '';
 
   li.innerHTML = `
   <div class="task-content">
@@ -360,7 +377,7 @@ const init = () => {
   addBtn.disabled = true;
   renderTask();
   updatePomodoroDisplay();
-  checkDueDates();
+  checkReminders();
 };
 
 // POMODORO LOGIC
