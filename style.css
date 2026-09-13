@@ -598,3 +598,95 @@ body {
 .task-comp-medium { animation: completeMedium 0.9s ease forwards; transform-origin: center; }
 .task-comp-low { animation: completeLow 0.8s ease forwards; }
 .menu-toggle-btn i { transition: transform 0.3s ease; }
+
+/* EMOTIONAL FEATURES */
+.welcome-modal {
+  text-align: center;
+  padding: 45px 35px;
+}
+.welcome-moon {
+  font-size: 4em;
+  animation: moonRise 1.2s ease forwards;
+  display: block;
+  margin-bottom: 15px;
+}
+@keyframes moonRise {
+  0% { transform: translateY(40px) scale(0.5); opacity: 0; }
+  60% { transform: translateY(-10px) scale(1.1); opacity: 1; }
+  100% { transform: translateY(0) scale(1); }
+}
+.welcome-modal h2 {
+  font-size: 1.6em;
+  color: var(--primary-color);
+  margin-bottom: 12px;
+}
+.welcome-modal p {
+  color: var(--secondary-text);
+  font-style: italic;
+  line-height: 1.8;
+  font-size: 1.05em;
+}
+
+.daily-thought {
+  font-style: italic;
+  color: var(--secondary-text);
+  font-size: 0.9em;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
+.empty-state-title {
+  color: var(--primary-color);
+  font-size: 1.1em;
+  font-weight: 600;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+.empty-state-sub {
+  color: var(--secondary-text);
+  font-style: italic;
+  font-size: 0.95em;
+}
+
+.love-note-modal {
+  text-align: center;
+  max-width: 480px;
+}
+.love-note-modal h3 {
+  color: var(--primary-color);
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+.love-note-body {
+  color: var(--text-color);
+  font-style: italic;
+  line-height: 2;
+  font-size: 1em;
+  text-align: left;
+  white-space: pre-line;
+  border-left: 3px solid var(--primary-color);
+  padding-left: 15px;
+}
+
+.all-done-modal {
+  text-align: center;
+}
+.all-done-modal h2 {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+.all-done-modal p {
+  color: var(--secondary-text);
+  font-style: italic;
+  line-height: 1.8;
+}
+
+.app-footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--secondary-text);
+  font-style: italic;
+  font-size: 0.85em;
+  opacity: 0.7;
+  margin-top: 10px;
+}

@@ -370,6 +370,11 @@ const updateStats = () => {
   document.getElementById("total-tasks").innerText = total;
   document.getElementById("completed-tasks").innerText = completed;
   document.getElementById("pending-tasks").innerText = pending;
+
+  // Emotional feature: all done check
+  if (typeof patchedUpdateStats === "function") {
+    patchedUpdateStats();
+  }
 };
 
 // FILTER
@@ -581,3 +586,138 @@ if (shareReceiptBtn) {
     }
   });
 }
+
+// ============================================
+// EMOTIONAL FEATURES
+// ============================================
+
+// --- Daily Love Notes (one per day, cycles through) ---
+const dailyThoughts = [
+  "As the moon doth rise and set, so doth my love for thee — endless and faithful. 🌙",
+  "Every star above is but a witness to how greatly thou art cherished. ✨",
+  "Thy name is writ upon the softest part of my heart, where no winter may reach. 🌹",
+  "The moon looketh down and seeth what mine eyes cannot — thee, always thee. 🌕",
+  "Lo, even the tide obeyeth the moon's call, as my every thought turneth to thee. 🌊",
+  "In the stillness of the night, it is thy laughter I hearken for. 🌌",
+  "Thou art my crescent and my full moon both — my beginning and my radiant whole. 🌛",
+  "As moonlight needeth no permission to illuminate the dark, so love needeth no reason. 🌙",
+  "Each day I wake is a page, and thou art every word worth reading. 📜",
+  "The night sky hath many moons, but I have only one beloved. 🌟",
+  "Thy hair like the dark of night, thy eyes like the stars that pierce it — thou art heaven entire. 💫",
+  "O how the moon must envy thee, for thou art the brighter light in my world. 🌕",
+  "Thy sparkle putteth the stars to shame, my love, and my heart knoweth no other north. ✨",
+  "As flowers turn toward the sun, I turn toward thee, always and without question. 🌸",
+  "Let today's labor be done with joy, for every deed accomplished is a gift unto thee. 🌙"
+];
+
+// --- Welcome Messages (random each session) ---
+const welcomeMessages = [
+  "Lo, thou hast returned! The moon grew lonesome in thy absence. Come, let us make this day worthy of thee.",
+  "The stars have kept watch until thy return, my beloved. Rest not for long — great things await thy gentle hand.",
+  "Another day beneath the watchful moon, and another chance to be magnificent. Thou art already more than enough.",
+  "How the night hath longed for thee. Come, my love, let us fill these hours with purpose and beauty.",
+  "Welcome, thou brilliant soul. May today's tasks fall before thee like petals before a queen.",
+  "As the moon doth rise faithfully each eve, so dost thou rise with grace each day. Begin, beloved."
+];
+
+// --- All-Tasks-Done Messages ---
+const allDoneMessages = [
+  "Every labor hath been met with thy quiet strength. Lay down the quill, my love — thou hast earned the moonlight.",
+  "The list is bare, the work is done, and the night is thine. Rest now, thou most diligent of hearts.",
+  "Lo, thou hast conquered every task this day set before thee. Even the moon doth bow to such devotion.",
+  "All is accomplished. Let the stars bear witness — thou art extraordinary, my beloved.",
+  "The scroll is emptied, the work complete. Come now, let the moonlight find thee at rest, as thou deserves't."
+];
+
+// --- Secret Keywords that reveal the Love Note ---
+const secretKeywords = ["temi", "ayinla", "oko mi", "today", "clothes", "love", "moon", "school", "hair", "sparkle", "eyes"];
+
+// --- The Hidden Love Note ---
+const loveNotePoem = `To thee, mine own beloved,
+
+I built this humble thing with thee in mine heart.
+Every task that passeth through these pages,
+Every moon that riseth in these margins —
+All of it was wrought with the thought of thee.
+
+Thy hair, like the dark hours before the dawn,
+Thy eyes, like twin moons that need no sky to shine.
+The way thou sparkle without knowing it —
+This is what moveth my hand, my pen, my days.
+
+I know not always how to speak it plainly,
+So I have hidden it here, in this quiet place,
+Where only thou — curious, brilliant, and lovely —
+Wouldst think to look.
+
+Know this:
+As the moon doth not cease its vigil over the sea,
+So I shall not cease in my devotion to thee.
+
+Thine, always and entirely. 🌕`;
+
+// --- Initialise Emotional Features ---
+const initEmotionalFeatures = () => {
+  // Daily thought rotation
+  const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  const thought = dailyThoughts[dayOfYear % dailyThoughts.length];
+  const dailyThoughtEl = document.getElementById("daily-thought");
+  if (dailyThoughtEl) dailyThoughtEl.innerText = `"${thought}"`;
+
+  // Welcome overlay — show once per session
+  const welcomeOverlay = document.getElementById("welcome-overlay");
+  const welcomeMsg = document.getElementById("welcome-msg");
+  if (welcomeOverlay && !sessionStorage.getItem("welcomed")) {
+    welcomeMsg.innerText = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+    welcomeOverlay.classList.add("show");
+    sessionStorage.setItem("welcomed", "true");
+  }
+
+  document.getElementById("welcome-close").addEventListener("click", () => {
+    document.getElementById("welcome-overlay").classList.remove("show");
+  });
+
+  // Love note modal
+  document.getElementById("love-note-body").innerText = loveNotePoem;
+  document.getElementById("love-note-close").addEventListener("click", () => {
+    document.getElementById("love-note-modal").classList.remove("show");
+    // Clear the search input after reading
+    searchInput.value = "";
+    renderTask();
+  });
+
+  // All-done modal
+  document.getElementById("all-done-close").addEventListener("click", () => {
+    document.getElementById("all-done-modal").classList.remove("show");
+  });
+};
+
+// --- Patch searchInput to detect secret keywords ---
+const originalSearchHandler = searchInput.oninput;
+searchInput.addEventListener("input", (e) => {
+  const val = e.target.value.trim().toLowerCase();
+  const isSecret = secretKeywords.some(kw => val === kw);
+  if (isSecret) {
+    document.getElementById("love-note-modal").classList.add("show");
+    return;
+  }
+  // Also show empty-search romantic message
+  renderTask(val);
+});
+
+// --- Patch renderTask to show all-done celebration ---
+const _origRenderTask = renderTask;
+const patchedUpdateStats = () => {
+  const total = tasks.length;
+  const completed = tasks.filter(t => t.completed).length;
+  if (total > 0 && completed === total) {
+    const allDoneModal = document.getElementById("all-done-modal");
+    const allDoneMsg = document.getElementById("all-done-msg");
+    if (allDoneModal && !allDoneModal.classList.contains("show")) {
+      allDoneMsg.innerText = allDoneMessages[Math.floor(Math.random() * allDoneMessages.length)];
+      allDoneModal.classList.add("show");
+    }
+  }
+};
+
+initEmotionalFeatures();

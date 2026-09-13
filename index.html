@@ -44,10 +44,40 @@
       </div>
     </div>
 
+    <!-- Welcome Greeting Overlay -->
+    <div id="welcome-overlay" class="modal-overlay">
+      <div class="modal-content welcome-modal">
+        <div class="welcome-moon">🌙</div>
+        <h2 id="welcome-title">Welcome, my beloved.</h2>
+        <p id="welcome-msg"></p>
+        <button id="welcome-close" class="btn btn-primary" style="margin-top: 25px;">Begin thy tasks</button>
+      </div>
+    </div>
+
+    <!-- Hidden Love Note Modal -->
+    <div id="love-note-modal" class="modal-overlay">
+      <div class="modal-content love-note-modal">
+        <div style="font-size: 2.5em; margin-bottom: 10px;">🌕</div>
+        <h3 id="love-note-title">Thou hast found me.</h3>
+        <div id="love-note-body" class="love-note-body"></div>
+        <button id="love-note-close" class="btn btn-primary" style="margin-top: 25px;">Carry this with thee 🌙</button>
+      </div>
+    </div>
+
+    <!-- All Tasks Done Celebration -->
+    <div id="all-done-modal" class="modal-overlay">
+      <div class="modal-content all-done-modal">
+        <div style="font-size: 3em; margin-bottom: 10px; animation: moonRise 1.5s ease forwards;">🌕</div>
+        <h2>All tasks are done, my beloved.</h2>
+        <p id="all-done-msg"></p>
+        <button id="all-done-close" class="btn btn-primary" style="margin-top: 25px;">Rest now, my love 🌙</button>
+      </div>
+    </div>
+
     <div class="container">
       <div class="header">
         <h1 class="heading"><i class="fa-solid fa-list-check"></i> Task Manager</h1>
-        <p>Stay organized and productive!</p>
+        <p id="daily-thought" class="daily-thought"></p>
       </div>
 
       <div class="main-content">
@@ -109,11 +139,16 @@
           <ul id="task-list" class="task-list"></ul>
 
           <div id="empty-state" class="empty-state" style="display: none">
-            <div style="font-size: 4em; margin-bottom: 10px; color: var(--secondary-text); opacity: 0.5;"><i class="fa-solid fa-check-circle"></i></div>
-            <p>No tasks yet. Add one above to get started!</p>
+            <div style="font-size: 3em; margin-bottom: 15px;">🌙</div>
+            <p class="empty-state-title">The page is bare, as a night without stars.</p>
+            <p class="empty-state-sub">Pen thy first task, my beloved, and let us begin this journey together.</p>
           </div>
         </div>
       </div>
+
+      <footer class="app-footer">
+        <p>Made with longing, by one who thinks of thee beneath every moon. 🌕</p>
+      </footer>
     </div>
 
     <!-- PWA Install Modal -->
