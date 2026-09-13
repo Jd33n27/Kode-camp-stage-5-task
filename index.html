@@ -51,18 +51,32 @@
           <input type="text" id="search-input" class="search-input" placeholder="Search tasks..." />
         </div>
 
-        <div class="input-section">
-          <input type="text" id="task-input" class="task-input" placeholder="Add a new task..." maxlength="100" />
-          <textarea id="task-desc" class="task-input task-desc-input" placeholder="Add details or notes..."></textarea>
-          
-          <div class="input-row-options">
-            <input type="datetime-local" id="task-date" class="task-date" title="Set a Reminder" />
-            <select id="task-priority" class="task-priority">
-              <option value="Low">Low Priority</option>
-              <option value="Medium" selected>Medium Priority</option>
-              <option value="High">High Priority</option>
-            </select>
-            <button id="add-btn" class="btn btn-primary">Add Task</button>
+        <!-- FAB -->
+        <button id="fab-add-task" class="fab" title="Add New Task">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+
+        <!-- Task Input Modal -->
+        <div id="task-input-modal" class="modal-overlay" style="display: none;">
+          <div class="modal-content input-modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h3 style="margin: 0;">New Task</h3>
+              <button id="close-input-modal" class="icon-btn" style="background: transparent; color: var(--text-color);"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="input-section" style="box-shadow: none; padding: 0; background: transparent;">
+              <input type="text" id="task-input" class="task-input" placeholder="Add a new task..." maxlength="100" />
+              <textarea id="task-desc" class="task-input task-desc-input" placeholder="Add details or notes..."></textarea>
+              
+              <div class="input-row-options">
+                <input type="datetime-local" id="task-date" class="task-date" title="Set a Reminder" />
+                <select id="task-priority" class="task-priority">
+                  <option value="Low">Low Priority</option>
+                  <option value="Medium" selected>Medium Priority</option>
+                  <option value="High">High Priority</option>
+                </select>
+                <button id="add-btn" class="btn btn-primary" style="width: 100%;">Add Task</button>
+              </div>
+            </div>
           </div>
         </div>
 

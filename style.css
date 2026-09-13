@@ -444,6 +444,34 @@ body {
   gap: 15px;
 }
 
+/* Floating Action Button */
+.fab {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  font-size: 1.8em;
+  box-shadow: 0 10px 25px rgba(168, 85, 247, 0.4);
+  cursor: pointer;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, background 0.2s;
+}
+.fab:hover {
+  transform: scale(1.1);
+  background: var(--primary-hover, #9333ea);
+}
+.input-modal-content {
+  text-align: left;
+}
+
 /* RESPONSIVE DESIGN */
 @media (max-width: 600px) {
   .top-bar {

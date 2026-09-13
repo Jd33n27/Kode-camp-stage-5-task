@@ -159,6 +159,9 @@ const addTask = () => {
   taskDate.value = "";
   taskPriority.value = "Medium";
   saveTasks();
+  if (typeof taskInputModal !== 'undefined' && taskInputModal) {
+    taskInputModal.style.display = "none";
+  }
 };
 
 addBtn.addEventListener("click", () => {
@@ -230,8 +233,10 @@ const createTask = (task, index) => {
     
     editingTaskId = task.id;
     addBtn.innerText = 'Save Update';
+    if (typeof taskInputModal !== 'undefined' && taskInputModal) {
+      taskInputModal.style.display = "flex";
+    }
     taskInput.focus();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   // Delete
@@ -364,24 +369,51 @@ importFile.addEventListener("change", (e) => {
   reader.readAsText(file);
 });
 
+// FAB AND MODAL
+const fabAddTask = document.getElementById("fab-add-task");
+const taskInputModal = document.getElementById("task-input-modal");
+const closeInputModal = document.getElementById("close-input-modal");
+
+fabAddTask.addEventListener("click", () => {
+  taskInputModal.style.display = "flex";
+  taskInput.focus();
+});
+
+closeInputModal.addEventListener("click", () => {
+  taskInputModal.style.display = "none";
+});
+
 // THEME
+const themeIcon = document.getElementById("theme-icon");
+const themeText = document.getElementById("theme-text");
+
 if (localStorage.getItem("theme") === "dark") {
   document.body.setAttribute("data-theme", "dark");
-  document.getElementById("theme-icon").classList.replace("fa-moon", "fa-sun");
-  document.getElementById("theme-text").innerText = "Switch to Light Mode";
+  if (themeIcon) {
+    themeIcon.classList.remove("fa-moon");
+    themeIcon.classList.add("fa-sun");
+  }
+  if (themeText) themeText.innerText = "Switch to Light Mode";
 }
 
-themeToggle.addEventListener("click", () => {
+themeToggle.addEventListener("click", (e) => {
+  e.stopPropagation();
   if (document.body.getAttribute("data-theme") === "dark") {
     document.body.removeAttribute("data-theme");
     localStorage.setItem("theme", "light");
-    document.getElementById("theme-icon").classList.replace("fa-sun", "fa-moon");
-    document.getElementById("theme-text").innerText = "Switch to Dark Mode";
+    if (themeIcon) {
+      themeIcon.classList.remove("fa-sun");
+      themeIcon.classList.add("fa-moon");
+    }
+    if (themeText) themeText.innerText = "Switch to Dark Mode";
   } else {
     document.body.setAttribute("data-theme", "dark");
     localStorage.setItem("theme", "dark");
-    document.getElementById("theme-icon").classList.replace("fa-moon", "fa-sun");
-    document.getElementById("theme-text").innerText = "Switch to Light Mode";
+    if (themeIcon) {
+      themeIcon.classList.remove("fa-moon");
+      themeIcon.classList.add("fa-sun");
+    }
+    if (themeText) themeText.innerText = "Switch to Light Mode";
   }
 });
 
