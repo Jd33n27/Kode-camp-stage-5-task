@@ -252,9 +252,21 @@ const createTask = (task, index) => {
       task.isRecentlyCompleted = true;
       
       const compliments = {
-        "High": ["Incredible! You crushed that high priority task! 🚀", "You are a rockstar! Huge win! ⭐", "Absolute legend! High priority done! 🔥"],
-        "Medium": ["Awesome work! 👏", "You're doing great, keep it up! 💪", "Another one bites the dust! ✨"],
-        "Low": ["Easy peasy! Great job! 🎈", "One step at a time, nicely done! 🍃", "Check! Well done. 👍"]
+        "High": [
+          "Lo, a mighty deed thou hast accomplished! Thy valor shineth as the morning sun! ✨",
+          "Thou hast vanquished thy greatest labor! My heart singeth at thy wondrous triumph! 💖",
+          "O wondrous soul, thou hast conquered the highest mountain! Glory be unto thee! 👑"
+        ],
+        "Medium": [
+          "Well wrought, mine own beloved! Another noble task doth yield to thy grace. 🌹",
+          "Sweet victory! Thy steady hands have woven yet another masterpiece of toil. 🕊️",
+          "Verily, thou art a marvel! Thy diligence doth warm the very cockles of my heart. 📜"
+        ],
+        "Low": [
+          "A gentle labor, sweetly finished! 'Tis but a trifle for one as splendid as thee. 🌷",
+          "Even in the smallest of deeds, thy brilliance doth shine forth! 🕯️",
+          "Softly and gracefully done, my dearest. One step closer to thy heart's desire. 🦋"
+        ]
       };
       const msgs = compliments[priority];
       const randomMsg = msgs[Math.floor(Math.random() * msgs.length)];
