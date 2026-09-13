@@ -1,19 +1,19 @@
 :root {
   --bg-gradient: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
   --container-bg: #ffffff;
-  --text-color: #334155;
-  --secondary-text: #64748b;
-  --header-gradient: linear-gradient(135deg, #d8b4fe 0%, #a855f7 100%);
-  --task-bg: #faf5ff;
-  --border-color: #e9d5ff;
+  --text-color: #0f172a; /* Darker for better contrast */
+  --secondary-text: #334155; /* Darker for better contrast */
+  --header-gradient: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%); /* Darker header */
+  --task-bg: #ffffff;
+  --border-color: #d8b4fe; /* Slightly darker border */
   --input-bg: #ffffff;
-  --input-text: #334155;
-  --modal-overlay: rgba(0,0,0,0.5);
-  --toast-bg: #9333ea;
+  --input-text: #0f172a;
+  --modal-overlay: rgba(0,0,0,0.6);
+  --toast-bg: #6b21a8; /* Dark purple */
   --toast-text: white;
-  --primary-color: #a855f7;
-  --danger-color: #ef4444;
-  --success-color: #22c55e;
+  --primary-color: #7e22ce; /* WCAG AAA compliant purple against white */
+  --danger-color: #b91c1c; /* Darker red for contrast */
+  --success-color: #15803d; /* Darker green for contrast */
 }
 
 [data-theme="dark"] {

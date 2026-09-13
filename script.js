@@ -379,6 +379,23 @@ pomodoroResetBtn.addEventListener("click", () => {
   updatePomodoroDisplay();
 });
 
+// ALARM SELECTOR
+const alarmSelector = document.getElementById("alarm-selector");
+if (localStorage.getItem("alarmTone")) {
+  alarmSelector.value = localStorage.getItem("alarmTone");
+  alarmSound.src = alarmSelector.value;
+}
+
+alarmSelector.addEventListener("change", (e) => {
+  const selectedTone = e.target.value;
+  alarmSound.src = selectedTone;
+  localStorage.setItem("alarmTone", selectedTone);
+  
+  // Play a quick preview
+  alarmSound.currentTime = 0;
+  alarmSound.play().catch(err => console.log("Audio preview blocked", err));
+});
+
 // PWA INSTALL
 let deferredPrompt;
 const installModal = document.getElementById('install-modal');
