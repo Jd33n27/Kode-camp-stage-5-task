@@ -15,13 +15,23 @@ const menuToggle = document.getElementById("menu-toggle");
 const topMenu = document.getElementById("top-menu");
 const shareReceiptBtn = document.getElementById("share-receipt-btn");
 
+const menuIcon = menuToggle.querySelector('i');
 menuToggle.addEventListener("click", () => {
-  topMenu.classList.toggle("open");
+  const isOpen = topMenu.classList.toggle("open");
+  if(isOpen) {
+    menuIcon.classList.replace('fa-bars', 'fa-xmark');
+    menuIcon.style.transform = 'rotate(90deg)';
+  } else {
+    menuIcon.classList.replace('fa-xmark', 'fa-bars');
+    menuIcon.style.transform = 'rotate(0deg)';
+  }
 });
 
 document.addEventListener("click", (e) => {
   if (!menuToggle.contains(e.target) && !topMenu.contains(e.target)) {
     topMenu.classList.remove("open");
+    menuIcon.classList.replace('fa-xmark', 'fa-bars');
+    menuIcon.style.transform = 'rotate(0deg)';
   }
 });
 
@@ -151,6 +161,7 @@ const addTask = () => {
       priority: taskPriority.value,
       createdAt: new Date().toISOString(),
       completedAt: null,
+      isNew: true
     };
     tasks.push(task);
     showToast("Task added");
@@ -191,6 +202,18 @@ const createTask = (task, index) => {
   li.setAttribute("draggable", "true");
   li.dataset.index = index;
 
+  if (task.isNew) {
+    const priority = task.priority || "Medium";
+    li.classList.add(`task-add-${priority.toLowerCase()}`);
+    task.isNew = false;
+  }
+  
+  if (task.isRecentlyCompleted) {
+    const priority = task.priority || "Medium";
+    li.classList.add(`task-comp-${priority.toLowerCase()}`);
+    task.isRecentlyCompleted = false;
+  }
+
   let displayDate = "";
   if (task.dueDate) {
     const d = new Date(task.dueDate);
@@ -222,8 +245,20 @@ const createTask = (task, index) => {
   const checkbox = li.querySelector(".task-item-checkbox");
   checkbox.addEventListener("change", () => {
     task.completed = checkbox.checked;
+    const priority = task.priority || "Medium";
+    
     if (task.completed) {
       task.completedAt = new Date().toISOString();
+      task.isRecentlyCompleted = true;
+      
+      const compliments = {
+        "High": ["Incredible! You crushed that high priority task! 🚀", "You are a rockstar! Huge win! ⭐", "Absolute legend! High priority done! 🔥"],
+        "Medium": ["Awesome work! 👏", "You're doing great, keep it up! 💪", "Another one bites the dust! ✨"],
+        "Low": ["Easy peasy! Great job! 🎈", "One step at a time, nicely done! 🍃", "Check! Well done. 👍"]
+      };
+      const msgs = compliments[priority];
+      const randomMsg = msgs[Math.floor(Math.random() * msgs.length)];
+      showToast(randomMsg);
     } else {
       task.completedAt = null;
     }

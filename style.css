@@ -497,19 +497,25 @@ body {
     margin-left: auto;
   }
   .top-menu {
-    display: none; /* hidden by default on mobile */
     flex-direction: column;
     align-items: flex-start;
     position: absolute;
-    top: 50px;
+    top: 55px;
     right: 0;
-    width: 200px;
+    width: 210px;
     padding: 15px;
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: top right;
   }
   .top-menu.open {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
   }
   .menu-item {
     width: 100%;
@@ -542,3 +548,48 @@ body {
     margin-top: 15px;
   }
 }
+
+/* TASK ADD/COMPLETE ANIMATIONS */
+@keyframes heartPulseDrop {
+  0% { transform: scale(0.1) translateY(-40px); opacity: 0; box-shadow: 0 0 30px #ef4444; border-radius: 50% 50% 0 50%; }
+  50% { transform: scale(1.1) translateY(10px); opacity: 1; box-shadow: 0 0 10px #ef4444; border-radius: 12px; }
+  100% { transform: scale(1) translateY(0); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+}
+
+@keyframes starSlideDrop {
+  0% { transform: scale(0.5) translateX(-50px) rotate(-10deg); opacity: 0; box-shadow: 0 0 20px #eab308; }
+  70% { transform: scale(1.05) translateX(10px) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) translateX(0) rotate(0); }
+}
+
+@keyframes gentleDrop {
+  0% { transform: translateY(-20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.task-add-high { animation: heartPulseDrop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+.task-add-medium { animation: starSlideDrop 0.5s ease-out forwards; }
+.task-add-low { animation: gentleDrop 0.4s ease-out forwards; }
+
+@keyframes completeHigh {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05) rotate(2deg); box-shadow: 0 0 20px #22c55e; background: #dcfce7; }
+  100% { transform: scale(1); opacity: 0.7; }
+}
+
+@keyframes completeMedium {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); background: #f3e8ff; box-shadow: 0 0 15px #a855f7; }
+  100% { transform: scale(1); opacity: 0.7; }
+}
+
+@keyframes completeLow {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; background: #f8fafc; }
+  100% { opacity: 0.7; }
+}
+
+.task-comp-high { animation: completeHigh 0.6s ease forwards; }
+.task-comp-medium { animation: completeMedium 0.5s ease forwards; }
+.task-comp-low { animation: completeLow 0.4s ease forwards; }
+.menu-toggle-btn i { transition: transform 0.3s ease; }
