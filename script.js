@@ -10,8 +10,6 @@ const searchInput = document.getElementById("search-input");
 const themeToggle = document.getElementById("theme-toggle");
 const exportBtn = document.getElementById("export-btn");
 const importFile = document.getElementById("import-file");
-const pomodoroToggle = document.getElementById("toggle-pomodoro");
-const pomodoroSection = document.getElementById("pomodoro-section");
 const alarmSound = document.getElementById("alarm-sound");
 const menuToggle = document.getElementById("menu-toggle");
 const topMenu = document.getElementById("top-menu");
@@ -58,7 +56,6 @@ let editingTaskId = null;
 // INIT
 const init = () => {
   renderTask();
-  updatePomodoroDisplay();
   checkReminders();
 };
 
@@ -338,15 +335,6 @@ if (localStorage.getItem("theme") === "dark") {
   document.body.setAttribute("data-theme", "dark");
 }
 
-// POMODORO TOGGLE
-pomodoroToggle.addEventListener("click", () => {
-  if (pomodoroSection.style.display === "none") {
-    pomodoroSection.style.display = "block";
-  } else {
-    pomodoroSection.style.display = "none";
-  }
-});
-
 // EXPORT/IMPORT
 exportBtn.addEventListener("click", () => {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tasks));
@@ -376,51 +364,25 @@ importFile.addEventListener("change", (e) => {
   reader.readAsText(file);
 });
 
-// POMODORO LOGIC
-let pomodoroInterval;
-let timeLeft = 25 * 60;
-let isPomodoroRunning = false;
-const pomodoroTimeDisplay = document.getElementById("pomodoro-time");
-const pomodoroStartBtn = document.getElementById("pomodoro-start");
-const pomodoroResetBtn = document.getElementById("pomodoro-reset");
+// THEME
+if (localStorage.getItem("theme") === "dark") {
+  document.body.setAttribute("data-theme", "dark");
+  document.getElementById("theme-icon").classList.replace("fa-moon", "fa-sun");
+  document.getElementById("theme-text").innerText = "Switch to Light Mode";
+}
 
-const updatePomodoroDisplay = () => {
-  const m = Math.floor(timeLeft / 60).toString().padStart(2, "0");
-  const s = (timeLeft % 60).toString().padStart(2, "0");
-  pomodoroTimeDisplay.innerText = `${m}:${s}`;
-};
-
-pomodoroStartBtn.addEventListener("click", () => {
-  if (isPomodoroRunning) {
-    clearInterval(pomodoroInterval);
-    pomodoroStartBtn.innerText = "Start";
+themeToggle.addEventListener("click", () => {
+  if (document.body.getAttribute("data-theme") === "dark") {
+    document.body.removeAttribute("data-theme");
+    localStorage.setItem("theme", "light");
+    document.getElementById("theme-icon").classList.replace("fa-sun", "fa-moon");
+    document.getElementById("theme-text").innerText = "Switch to Dark Mode";
   } else {
-    pomodoroInterval = setInterval(() => {
-      if (timeLeft > 0) {
-        timeLeft--;
-        updatePomodoroDisplay();
-      } else {
-        clearInterval(pomodoroInterval);
-        alarmSound.play().catch(e => console.log("Audio blocked"));
-        showToast("Pomodoro session completed!");
-        if ('Notification' in window && Notification.permission === 'granted') {
-          showPushNotification('Pomodoro Complete!', 'Time to take a break.');
-        }
-        isPomodoroRunning = false;
-        pomodoroStartBtn.innerText = "Start";
-      }
-    }, 1000);
-    pomodoroStartBtn.innerText = "Pause";
+    document.body.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark");
+    document.getElementById("theme-icon").classList.replace("fa-moon", "fa-sun");
+    document.getElementById("theme-text").innerText = "Switch to Light Mode";
   }
-  isPomodoroRunning = !isPomodoroRunning;
-});
-
-pomodoroResetBtn.addEventListener("click", () => {
-  clearInterval(pomodoroInterval);
-  isPomodoroRunning = false;
-  pomodoroStartBtn.innerText = "Start";
-  timeLeft = 25 * 60;
-  updatePomodoroDisplay();
 });
 
 // ALARM SELECTOR

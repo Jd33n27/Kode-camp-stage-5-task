@@ -16,7 +16,7 @@
       
       <div class="top-menu" id="top-menu">
         <button id="theme-toggle" class="menu-item">
-          <i class="fa-solid fa-moon"></i> <span>Dark Mode</span>
+          <i class="fa-solid fa-moon" id="theme-icon"></i> <span id="theme-text">Switch to Dark Mode</span>
         </button>
         
         <div class="menu-item select-menu-item">
@@ -28,10 +28,6 @@
             <option value="https://assets.mixkit.co/active_storage/sfx/995/995-preview.mp3">Bell</option>
           </select>
         </div>
-
-        <button id="toggle-pomodoro" class="menu-item">
-          <i class="fa-solid fa-stopwatch"></i> <span>Pomodoro</span>
-        </button>
         
         <button id="export-btn" class="menu-item">
           <i class="fa-solid fa-floppy-disk"></i> <span>Export Tasks</span>
@@ -51,16 +47,6 @@
       </div>
 
       <div class="main-content">
-        <!-- Hidden Pomodoro -->
-        <div class="pomodoro-section" id="pomodoro-section" style="display: none;">
-          <h2><i class="fa-solid fa-clock"></i> Pomodoro Timer</h2>
-          <div class="pomodoro-timer" id="pomodoro-time">25:00</div>
-          <div class="pomodoro-controls">
-            <button class="btn btn-primary" id="pomodoro-start">Start</button>
-            <button class="btn btn-secondary" id="pomodoro-reset">Reset</button>
-          </div>
-        </div>
-
         <div class="search-section">
           <input type="text" id="search-input" class="search-input" placeholder="Search tasks..." />
         </div>

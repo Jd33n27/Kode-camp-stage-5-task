@@ -361,30 +361,6 @@ body {
   padding: 40px;
 }
 
-/* Pomodoro Section */
-.pomodoro-section {
-  background: var(--container-bg);
-  padding: 25px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.04);
-}
-.pomodoro-section h2 {
-  color: var(--primary-color);
-  margin-bottom: 10px;
-}
-.pomodoro-timer {
-  font-size: 4em;
-  font-weight: 800;
-  margin: 15px 0;
-  color: var(--primary-color);
-}
-.pomodoro-controls {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
 /* Buttons */
 .btn {
   padding: 14px 28px;
