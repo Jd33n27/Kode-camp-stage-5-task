@@ -160,7 +160,7 @@ const addTask = () => {
   taskPriority.value = "Medium";
   saveTasks();
   if (typeof taskInputModal !== 'undefined' && taskInputModal) {
-    taskInputModal.style.display = "none";
+    taskInputModal.classList.remove("show");
   }
 };
 
@@ -234,7 +234,7 @@ const createTask = (task, index) => {
     editingTaskId = task.id;
     addBtn.innerText = 'Save Update';
     if (typeof taskInputModal !== 'undefined' && taskInputModal) {
-      taskInputModal.style.display = "flex";
+      taskInputModal.classList.add("show");
     }
     taskInput.focus();
   });
@@ -329,17 +329,6 @@ searchInput.addEventListener("input", (e) => {
   renderTask(e.target.value);
 });
 
-// THEME TOGGLE
-themeToggle.addEventListener("click", () => {
-  const current = document.body.getAttribute("data-theme");
-  const newTheme = current === "dark" ? "light" : "dark";
-  document.body.setAttribute("data-theme", newTheme);
-  localStorage.setItem("theme", newTheme);
-});
-if (localStorage.getItem("theme") === "dark") {
-  document.body.setAttribute("data-theme", "dark");
-}
-
 // EXPORT/IMPORT
 exportBtn.addEventListener("click", () => {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tasks));
@@ -375,12 +364,12 @@ const taskInputModal = document.getElementById("task-input-modal");
 const closeInputModal = document.getElementById("close-input-modal");
 
 fabAddTask.addEventListener("click", () => {
-  taskInputModal.style.display = "flex";
+  taskInputModal.classList.add("show");
   taskInput.focus();
 });
 
 closeInputModal.addEventListener("click", () => {
-  taskInputModal.style.display = "none";
+  taskInputModal.classList.remove("show");
 });
 
 // THEME
@@ -444,12 +433,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   if (!localStorage.getItem('pwaPromptDeclined')) {
-    installModal.style.display = 'flex';
+    installModal.classList.add('show');
   }
 });
 
 installAccept.addEventListener('click', async () => {
-  installModal.style.display = 'none';
+  installModal.classList.remove('show');
   if (deferredPrompt) {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
@@ -459,7 +448,7 @@ installAccept.addEventListener('click', async () => {
 });
 
 installDecline.addEventListener('click', () => {
-  installModal.style.display = 'none';
+  installModal.classList.remove('show');
   localStorage.setItem('pwaPromptDeclined', 'true');
 });
 
