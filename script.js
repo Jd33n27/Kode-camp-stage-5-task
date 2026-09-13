@@ -85,7 +85,7 @@ const showToast = (message) => {
   container.appendChild(toast);
   setTimeout(() => {
     toast.remove();
-  }, 3000);
+  }, 6000);
 };
 
 // NATIVE NOTIFICATIONS & ALARM
