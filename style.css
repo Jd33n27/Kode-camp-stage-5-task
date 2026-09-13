@@ -318,7 +318,7 @@ body {
   opacity: 1;
 }
 
-.delete-btn {
+.edit-btn, .delete-btn {
   background: none;
   border: none;
   color: var(--secondary-text);
@@ -326,6 +326,11 @@ body {
   padding: 8px;
   border-radius: 4px;
   transition: all 0.2s;
+}
+
+.edit-btn:hover {
+  color: white;
+  background: var(--primary-color);
 }
 
 .delete-btn:hover {

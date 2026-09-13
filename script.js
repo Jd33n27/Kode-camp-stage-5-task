@@ -18,6 +18,7 @@ const alarmSound = document.getElementById("alarm-sound");
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let taskIdCounter = tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
 let draggedItemIndex = null;
+let editingTaskId = null;
 
 // INIT
 const init = () => {
@@ -87,30 +88,51 @@ const checkReminders = () => {
   }, 10000); // check every 10 seconds
 };
 
-// ADD TASK
+// ADD OR UPDATE TASK
 const addTask = () => {
   const taskText = taskInput.value.trim();
   if (taskText === "") return;
 
-  const task = {
-    id: taskIdCounter++,
-    text: taskText,
-    desc: taskDesc.value.trim(),
-    completed: false,
-    dueDate: taskDate.value,
-    notified: false,
-    preNotified: false,
-    priority: taskPriority.value,
-    createdAt: new Date(),
-  };
+  if (editingTaskId !== null) {
+    // Update existing task
+    const taskIndex = tasks.findIndex(t => t.id === editingTaskId);
+    if (taskIndex !== -1) {
+      tasks[taskIndex].text = taskText;
+      tasks[taskIndex].desc = taskDesc.value.trim();
+      
+      // If due date changed, reset notification flags
+      if (tasks[taskIndex].dueDate !== taskDate.value) {
+        tasks[taskIndex].notified = false;
+        tasks[taskIndex].preNotified = false;
+      }
+      tasks[taskIndex].dueDate = taskDate.value;
+      tasks[taskIndex].priority = taskPriority.value;
+    }
+    editingTaskId = null;
+    addBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
+    showToast("Task updated");
+  } else {
+    // Add new task
+    const task = {
+      id: taskIdCounter++,
+      text: taskText,
+      desc: taskDesc.value.trim(),
+      completed: false,
+      dueDate: taskDate.value,
+      notified: false,
+      preNotified: false,
+      priority: taskPriority.value,
+      createdAt: new Date(),
+    };
+    tasks.push(task);
+    showToast("Task added");
+  }
 
-  tasks.push(task);
   taskInput.value = "";
   taskDesc.value = "";
   taskDate.value = "";
   taskPriority.value = "Medium";
   saveTasks();
-  showToast("Task added");
 };
 
 addBtn.addEventListener("click", addTask);
@@ -147,6 +169,7 @@ const createTask = (task, index) => {
     </div>
   </div>
   <div class="task-actions">
+    <button class="edit-btn" title="Edit Task"><i class="fa-solid fa-pen"></i></button>
     <button class="delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
     <i class="fa-solid fa-grip-lines drag-handle"></i>
   </div>
@@ -157,6 +180,20 @@ const createTask = (task, index) => {
   checkbox.addEventListener("change", () => {
     task.completed = checkbox.checked;
     saveTasks();
+  });
+
+  // Edit
+  const editBtn = li.querySelector(".edit-btn");
+  editBtn.addEventListener("click", () => {
+    taskInput.value = task.text;
+    taskDesc.value = task.desc || "";
+    taskDate.value = task.dueDate || "";
+    taskPriority.value = task.priority || "Medium";
+    
+    editingTaskId = task.id;
+    addBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    taskInput.focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   // Delete
