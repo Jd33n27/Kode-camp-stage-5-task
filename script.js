@@ -1,4 +1,6 @@
 const taskInput = document.getElementById("task-input");
+const taskDate = document.getElementById("task-date");
+const taskPriority = document.getElementById("task-priority");
 const addBtn = document.getElementById("add-btn");
 const taskList = document.getElementById("task-list");
 const emptyState = document.getElementById("empty-state");
@@ -6,26 +8,110 @@ const totalTaskElement = document.getElementById("total-tasks");
 const completedTask = document.getElementById("completed-tasks");
 const pendingTask = document.getElementById("pending-tasks");
 const filterButtons = document.querySelectorAll(".filter-btn");
+const searchInput = document.getElementById("search-input");
+const themeToggle = document.getElementById("theme-toggle");
+const exportBtn = document.getElementById("export-btn");
+const importFile = document.getElementById("import-file");
 
-//TASK DATA  STORAGE
-let tasks = [];
-let taskIdCounter = 1;
-let currentFilter = "all";
+// POMODORO ELEMENTS
+const pomodoroTime = document.getElementById("pomodoro-time");
+const pomodoroStartBtn = document.getElementById("pomodoro-start");
+const pomodoroResetBtn = document.getElementById("pomodoro-reset");
 
-//CLICK EVENT ON BUTTON
-taskInput.addEventListener("keypress", function (e) {
-  if (e.key === "Enter") {
-    addTask();
+// NOTIFICATION SYSTEM
+const toastContainer = document.getElementById("toast-container");
+const showToast = (message) => {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+  toastContainer.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+};
+
+// THEME TOGGLE
+let isDarkMode = localStorage.getItem("darkMode") === "true";
+if (isDarkMode) document.body.classList.add("dark-mode");
+themeToggle.textContent = isDarkMode ? "☀️" : "🌙";
+
+themeToggle.addEventListener("click", () => {
+  isDarkMode = !isDarkMode;
+  document.body.classList.toggle("dark-mode", isDarkMode);
+  themeToggle.textContent = isDarkMode ? "☀️" : "🌙";
+  localStorage.setItem("darkMode", isDarkMode);
+  showToast(isDarkMode ? "Dark mode enabled" : "Light mode enabled");
+});
+
+// PWA INSTALL MODAL
+let deferredPrompt;
+const installModal = document.getElementById("install-modal");
+const btnInstall = document.getElementById("install-accept");
+const btnDecline = document.getElementById("install-decline");
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later.
+  deferredPrompt = e;
+  // Update UI to notify the user they can add to home screen
+  if (!localStorage.getItem('pwaDeclined')) {
+    installModal.style.display = "flex";
   }
 });
 
-//iNPUT VALIDATION
-taskInput.addEventListener("input", function () {
-  const isEmpty = this.value.trim() === "";
-  addBtn.disabled = isEmpty;
+btnInstall.addEventListener('click', () => {
+  installModal.style.display = "none";
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        showToast("App installed successfully!");
+      }
+      deferredPrompt = null;
+    });
+  }
+});
+btnDecline.addEventListener('click', () => {
+  installModal.style.display = "none";
+  localStorage.setItem('pwaDeclined', 'true');
 });
 
-//FILTERING BUTTON AND REMOVING/ADDING ACTIVE STATE
+
+// POMODORO STATE
+let timerInterval = null;
+let timeLeft = 25 * 60; // 25 minutes
+let isTimerRunning = false;
+
+// SERVICE WORKER REGISTRATION
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(registration => console.log('ServiceWorker registration successful'))
+      .catch(err => console.log('ServiceWorker registration failed: ', err));
+  });
+}
+
+//TASK DATA STORAGE
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+let taskIdCounter = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
+let currentFilter = "all";
+let searchTerm = "";
+
+const saveTasks = () => {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+};
+
+// EVENT LISTENERS
+taskInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter" && !addBtn.disabled) addTask();
+});
+taskInput.addEventListener("input", function () {
+  addBtn.disabled = this.value.trim() === "";
+});
+searchInput.addEventListener("input", function () {
+  searchTerm = this.value.toLowerCase();
+  renderTask();
+});
+
 filterButtons.forEach((btn) => {
   btn.addEventListener("click", function () {
     filterButtons.forEach((b) => b.classList.remove("active"));
@@ -35,153 +121,274 @@ filterButtons.forEach((btn) => {
   });
 });
 
-//Adding Task
+// EXPORT / IMPORT
+exportBtn.addEventListener("click", () => {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tasks));
+  const dlAnchorElem = document.createElement('a');
+  dlAnchorElem.setAttribute("href", dataStr);
+  dlAnchorElem.setAttribute("download", "tasks_backup.json");
+  dlAnchorElem.click();
+  showToast("Tasks exported successfully!");
+});
+
+importFile.addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const importedTasks = JSON.parse(e.target.result);
+      if (Array.isArray(importedTasks)) {
+        tasks = importedTasks;
+        saveTasks();
+        renderTask();
+        showToast("Tasks imported successfully!");
+      }
+    } catch (err) {
+      showToast("Invalid JSON file");
+    }
+  };
+  reader.readAsText(file);
+});
+
+
+// ADD TASK
 const addTask = () => {
   const taskText = taskInput.value.trim();
+  if (taskText === "") return showToast("Please enter a task");
 
-  if (taskText === "") {
-    alert("Please enter task");
-  }
-
-  //create task object
   const task = {
     id: taskIdCounter++,
     text: taskText,
     completed: false,
+    dueDate: taskDate.value,
+    priority: taskPriority.value,
     createdAt: new Date(),
   };
 
-  //Updating the Array with new task
   tasks.push(task);
+  saveTasks();
 
-  //Clear input
   taskInput.value = "";
+  taskDate.value = "";
+  taskPriority.value = "Medium";
   addBtn.disabled = true;
 
-  //update ui
-
   renderTask();
-  // updateTask()
+  showToast("Task added!");
 };
-
 addBtn.addEventListener("click", addTask);
 
+// TOGGLE
 const toggleTask = (taskId) => {
-  const task = tasks.find((task) => task.id === taskId);
-
+  const task = tasks.find((t) => t.id === taskId);
   if (task) {
     task.completed = !task.completed;
+    saveTasks();
     renderTask();
-    // updateTask()
+    if(task.completed) showToast("Task marked completed!");
   }
 };
 
+// DELETE
 const deleteTask = (taskId) => {
   if (confirm("Are you sure you want to delete this task?")) {
-    tasks = tasks.filter((task) => task.id !== taskId);
-
+    tasks = tasks.filter((t) => t.id !== taskId);
+    saveTasks();
     renderTask();
-    // updateTask()
+    showToast("Task deleted!");
   }
 };
 
-const editTask = (taskId) => {
-  const task = tasks.find((task) => task.id === taskId);
+// EDIT
+window.editTask = (taskId) => {
+  const task = tasks.find((t) => t.id === taskId);
   if (!task) return;
 
-  const taskNumber = document.querySelector(`[data-data-id="${task.id}"]`);
-  const currentText = taskNumber.querySelector(".task-text");
-  const actions = taskNumber.querySelector(".task-actions");
+  const taskEl = document.querySelector(`[data-data-id="${task.id}"]`);
+  const mainInfo = taskEl.querySelector(".task-main-info");
+  const actions = taskEl.querySelector(".task-actions");
 
-  // replace text
-  const presentText = task.text;
-  currentText.innerHTML = `<input type="text" class="task-input-edit" value="${presentText}" maxlength="100">`;
-
+  mainInfo.innerHTML = `<input type="text" class="task-input-edit" value="${task.text}" maxlength="100">`;
   actions.innerHTML = `
         <button class="btn save-btn" onclick="saveEdit(${taskId})">Save</button>
-        <button class="btn cancel-btn" onclick="cancelEdit(${taskId})">Cancel</button>
+        <button class="btn cancel-btn" onclick="cancelEdit()">Cancel</button>
     `;
 };
 
-const saveEdit = (taskId) => {
-  const task = tasks.find((task) => task.id === taskId);
+window.saveEdit = (taskId) => {
+  const task = tasks.find((t) => t.id === taskId);
   if (!task) return;
 
-  const taskNumber = document.querySelector(`[data-data-id="${task.id}"]`);
-  const taskInput = taskNumber.querySelector(".task-input-edit");
-  const newText = taskInput.value.trim();
+  const taskEl = document.querySelector(`[data-data-id="${task.id}"]`);
+  const taskInputEl = taskEl.querySelector(".task-input-edit");
+  const newText = taskInputEl.value.trim();
 
-  if (newText === ``) {
-    alert("Task cannot be empty!");
-    return;
-  }
-
+  if (newText === "") return showToast("Task cannot be empty!");
   task.text = newText;
-
+  saveTasks();
   renderTask();
+  showToast("Task updated!");
 };
 
-const cancelEdit = (taskId) => {
-  renderTask();
-};
+window.cancelEdit = () => renderTask();
+
+// DRAG AND DROP GLOBALS
+let dragStartIndex = -1;
+
+// RENDER
 const renderTask = () => {
-  // Clear current tasks
   taskList.innerHTML = "";
-
-  let filteredTask = tasks;
+  
+  let filteredTask = tasks.filter(t => t.text.toLowerCase().includes(searchTerm));
 
   if (currentFilter === "completed") {
-    filteredTask = tasks.filter((task) => task.completed);
+    filteredTask = filteredTask.filter((t) => t.completed);
   } else if (currentFilter === "pending") {
-    filteredTask = tasks.filter((t) => !t.completed);
+    filteredTask = filteredTask.filter((t) => !t.completed);
   }
 
-  if (filteredTask.length === 0) {
-    emptyState.style.display = "block";
-  } else {
-    emptyState.style.display = "none";
-  }
+  emptyState.style.display = filteredTask.length === 0 ? "block" : "none";
 
-  filteredTask.forEach((task) => {
-    const taskElement = createTask(task);
+  filteredTask.forEach((task, index) => {
+    const taskElement = createTask(task, index);
     taskList.appendChild(taskElement);
   });
 
-  // Update task counts
   totalTaskElement.textContent = tasks.length;
-  completedTask.textContent = tasks.filter((task) => task.completed).length;
-  pendingTask.textContent = tasks.filter((task) => !task.completed).length;
+  completedTask.textContent = tasks.filter((t) => t.completed).length;
+  pendingTask.textContent = tasks.filter((t) => !t.completed).length;
 };
 
-const createTask = (task) => {
+// CREATE TASK ELEMENT
+const createTask = (task, index) => {
   const li = document.createElement("li");
-
   li.className = `task-item ${task.completed ? "completed" : ""}`;
-
   li.setAttribute("data-data-id", task.id);
+  li.setAttribute("draggable", "true");
+  li.dataset.index = index; // for drag and drop
 
-  li.innerHTML = `<div class="task-content">
-    <input type="checkbox" class="task-checkbox" ${
-      task.completed ? "checked" : ""
-    } onchange="toggleTask(${task.id})">
-      <span class="task-text ${task.completed ? "completed" : ""}">${
-    task.text
-  }</span>
-  <div class="task-actions">
-    <button class="btn edit-btn" onclick="editTask(${task.id})">Edit</button>
-  <button class="btn delete-btn" onclick="deleteTask(${
-    task.id
-  })">Delete</button>
+  const priorityClass = task.priority ? task.priority.toLowerCase() : 'medium';
+  const badgeHTML = task.priority ? `<span class="badge ${priorityClass}">${task.priority}</span>` : '';
+  const dateHTML = task.dueDate ? `<span class="badge">📅 ${task.dueDate}</span>` : '';
+
+  li.innerHTML = `
+  <div class="task-content">
+    <div class="task-main-info">
+      <input type="checkbox" class="task-checkbox" ${task.completed ? "checked" : ""} onchange="toggleTask(${task.id})">
+      <span class="task-text ${task.completed ? "completed" : ""}">${task.text}</span>
+    </div>
+    <div class="task-actions">
+      <button class="btn edit-btn" onclick="editTask(${task.id})">Edit</button>
+      <button class="btn delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+    </div>
   </div>
+  <div class="task-meta">
+    ${badgeHTML}
+    ${dateHTML}
   </div>`;
+
+  // DRAG AND DROP EVENTS
+  li.addEventListener("dragstart", (e) => {
+    dragStartIndex = tasks.indexOf(task); // Get real index in tasks array
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", dragStartIndex);
+    setTimeout(() => li.classList.add("drag-over"), 0);
+  });
+
+  li.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    li.style.border = "2px dashed #4facfe";
+  });
+
+  li.addEventListener("dragleave", () => {
+    li.style.border = "";
+  });
+
+  li.addEventListener("dragend", () => {
+    li.classList.remove("drag-over");
+    li.style.border = "";
+  });
+
+  li.addEventListener("drop", (e) => {
+    e.preventDefault();
+    li.style.border = "";
+    const dragEndIndex = tasks.indexOf(task);
+    if (dragStartIndex !== dragEndIndex && dragStartIndex !== -1) {
+      swapItems(dragStartIndex, dragEndIndex);
+    }
+  });
 
   return li;
 };
 
+// SWAP ARRAY ITEMS
+const swapItems = (fromIndex, toIndex) => {
+  const item = tasks.splice(fromIndex, 1)[0];
+  tasks.splice(toIndex, 0, item);
+  saveTasks();
+  renderTask();
+};
+
+
 const init = () => {
   addBtn.disabled = true;
   renderTask();
-  // updateTask()
+  updatePomodoroDisplay();
 };
+
+// POMODORO LOGIC
+const formatTime = (seconds) => {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+};
+
+const updatePomodoroDisplay = () => {
+  pomodoroTime.textContent = formatTime(timeLeft);
+};
+
+pomodoroStartBtn.addEventListener('click', () => {
+  if (isTimerRunning) {
+    clearInterval(timerInterval);
+    pomodoroStartBtn.textContent = 'Start';
+    pomodoroStartBtn.classList.remove('cancel-btn');
+    pomodoroStartBtn.classList.add('add-btn');
+  } else {
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      updatePomodoroDisplay();
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        pomodoroStartBtn.textContent = 'Start';
+        pomodoroStartBtn.classList.remove('cancel-btn');
+        pomodoroStartBtn.classList.add('add-btn');
+        showToast("🍅 Pomodoro session completed! Take a break.");
+        timeLeft = 25 * 60;
+        updatePomodoroDisplay();
+      }
+    }, 1000);
+    pomodoroStartBtn.textContent = 'Pause';
+    pomodoroStartBtn.classList.remove('add-btn');
+    pomodoroStartBtn.classList.add('cancel-btn');
+  }
+  isTimerRunning = !isTimerRunning;
+});
+
+pomodoroResetBtn.addEventListener('click', () => {
+  clearInterval(timerInterval);
+  isTimerRunning = false;
+  timeLeft = 25 * 60;
+  updatePomodoroDisplay();
+  pomodoroStartBtn.textContent = 'Start';
+  pomodoroStartBtn.classList.remove('cancel-btn');
+  pomodoroStartBtn.classList.add('add-btn');
+});
+
+// Explicit window bindings for inline HTML onclick handlers
+window.toggleTask = toggleTask;
+window.deleteTask = deleteTask;
 
 init();
