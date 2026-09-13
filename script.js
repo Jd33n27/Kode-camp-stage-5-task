@@ -14,6 +14,29 @@ const pomodoroToggle = document.getElementById("toggle-pomodoro");
 const pomodoroSection = document.getElementById("pomodoro-section");
 const alarmSound = document.getElementById("alarm-sound");
 
+// SERVICE WORKER REGISTRATION
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(reg => console.log('SW registered!', reg))
+    .catch(err => console.error('SW registration failed!', err));
+}
+
+// PUSH NOTIFICATION HELPER
+const showPushNotification = (title, body) => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(registration => {
+      registration.showNotification(title, {
+        body: body,
+        icon: './icon-192.svg',
+        vibrate: [300, 100, 300, 100, 300], // vibration pattern
+        requireInteraction: true // Keep on screen until clicked
+      });
+    });
+  } else if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(title, { body: body, icon: './icon-192.svg', requireInteraction: true });
+  }
+};
+
 // STATE
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let taskIdCounter = tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
@@ -59,7 +82,7 @@ const checkReminders = () => {
         if (timeDiffMinutes <= 5 && timeDiffMinutes > 0 && !task.preNotified) {
           showToast(`⏳ Heads up: "${task.text}" is due in 5 minutes!`);
           if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('Upcoming Task', { body: `${task.text} is due in 5 minutes!`, icon: './icon-192.svg' });
+            showPushNotification('Upcoming Task', `${task.text} is due in 5 minutes!`);
           }
           task.preNotified = true;
           localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -72,7 +95,7 @@ const checkReminders = () => {
           
           showToast(`⏰ Alarm: "${task.text}" is due now!`);
           if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('Task Due!', { body: task.text, icon: './icon-192.svg' });
+            showPushNotification('Task Due!', task.text);
           }
           task.notified = true;
           localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -369,7 +392,7 @@ pomodoroStartBtn.addEventListener("click", () => {
         alarmSound.play().catch(e => console.log("Audio blocked"));
         showToast("Pomodoro session completed!");
         if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('Pomodoro Complete!', { body: 'Time to take a break.', icon: './icon-192.svg' });
+          showPushNotification('Pomodoro Complete!', 'Time to take a break.');
         }
         isPomodoroRunning = false;
         pomodoroStartBtn.innerText = "Start";
